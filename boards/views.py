@@ -1,42 +1,57 @@
-from rest_framework import viewsets, permissions
-from .models import Board, Column, TeamMember
-from .serializers import BoardSerializer, ColumnSerializer, TeamMemberSerializer
-from .permissions import IsBoardOwnerOrAdmin
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Board
+from .serializers import BoardSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
-class BoardViewSet(viewsets.ModelViewSet):
-    serializer_class = BoardSerializer
-    permission_classes = [permissions.IsAuthenticated, IsBoardOwnerOrAdmin]
+class BoardListView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return Board.objects.filter(created_by=self.request.user)
+    def get(self, request):
+        boards = Board.objects.all()
+        serializer = BoardSerializer(boards, many=True)
+        return Response(serializer.data)
 
-    def perform_create(self, serializer):
-        board = serializer.save(created_by=self.request.user)
-        TeamMember.objects.create(
-            user=self.request.user,
-            board=board,
-            role='owner'
-        )
-
-
-class ColumnViewSet(viewsets.ModelViewSet):
-    serializer_class = ColumnSerializer
-    permission_classes = [permissions.IsAuthenticated, IsBoardOwnerOrAdmin]
-
-    def get_queryset(self):
-        return Column.objects.filter(board_id=self.kwargs['board_pk'])
-
-    def perform_create(self, serializer):
-        serializer.save(board_id=self.kwargs['board_pk'])
+    def post(self, request):
+        serializer = BoardSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(createdBy=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TeamMemberViewSet(viewsets.ModelViewSet):
-    serializer_class = TeamMemberSerializer
-    permission_classes = [permissions.IsAuthenticated, IsBoardOwnerOrAdmin]
+class BoardDetailView(APIView):  # For GET, PUT, DELETE on a specific board
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return TeamMember.objects.filter(board_id=self.kwargs['board_pk'])
+    def get(self, request, pk):
+        try:
+            board = Board.objects.get(pk=pk)
+        except Board.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = BoardSerializer(board)
+        return Response(serializer.data)
 
-    def perform_create(self, serializer):
-        serializer.save(board_id=self.kwargs['board_pk'])
+    def put(self, request, pk):
+        try:
+            board = Board.objects.get(pk=pk)
+        except Board.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        # partial=True allows partial updates
+        serializer = BoardSerializer(board, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            board = Board.objects.get(pk=pk)
+        except Board.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        board.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

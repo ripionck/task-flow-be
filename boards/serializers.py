@@ -1,29 +1,11 @@
 from rest_framework import serializers
-from .models import Board, Column, TeamMember
-
-
-class ColumnSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Column
-        fields = '__all__'
-        read_only_fields = ('board',)
-
-
-class TeamMemberSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-
-    class Meta:
-        model = TeamMember
-        fields = '__all__'
-        read_only_fields = ('board',)
+from .models import Board
 
 
 class BoardSerializer(serializers.ModelSerializer):
-    columns = ColumnSerializer(many=True, read_only=True)
-    team_members = TeamMemberSerializer(many=True, read_only=True)
-    created_by = serializers.StringRelatedField()
-
     class Meta:
         model = Board
-        fields = '__all__'
-        read_only_fields = ('created_by',)
+        fields = ('id', 'title', 'description', 'cover_image', 'tags', 'columns',
+                  'created_by', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'columns', 'created_by',
+                            'created_at', 'updated_at')

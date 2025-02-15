@@ -8,8 +8,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'full_name', 'email', 'role', 'avatar', 'emailNotifications',
-                  'desktopNotifications', 'themeMode', 'accentColor')
+        fields = ('id', 'full_name', 'email', 'role', 'avatar', 'email_notifications',
+                  'desktop_notifications', 'theme_mode', 'accent_color')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):

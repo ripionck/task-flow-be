@@ -3,8 +3,7 @@ from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    avatar = serializers.ImageField(
-        max_length=None, use_url=True, allow_null=True, blank=True)
+    avatar = serializers.ImageField(allow_null=True, required=False)
 
     class Meta:
         model = User

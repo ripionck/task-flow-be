@@ -3,6 +3,8 @@ from .models import Board
 
 
 class BoardSerializer(serializers.ModelSerializer):
+    cover_image = serializers.URLField(allow_null=True, required=False)
+
     class Meta:
         model = Board
         fields = ('id', 'title', 'description', 'cover_image', 'tags', 'columns',

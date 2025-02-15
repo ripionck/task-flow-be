@@ -1,24 +1,26 @@
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.response import Response
-from .serializers import UserRegistrationSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenObtainPairSerializer
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from .serializers import UserProfileSerializer, UserSettingsSerializer
+from rest_framework.permissions import IsAuthenticated
+from .serializers import (
+    UserRegistrationSerializer,
+    CustomTokenObtainPairSerializer,
+    UserProfileSerializer,
+    UserSettingsSerializer
+)
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
-class UserRegistrationView(generics.CreateAPIView):
-    serializer_class = UserRegistrationSerializer
-
+class UserRegistrationView(APIView):
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response({
-            'user': serializer.data,
-            'message': 'User created successfully'
-        }, status=status.HTTP_201_CREATED)
+        serializer = UserRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                'user': serializer.data,
+                'message': 'User created successfully'
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -39,7 +41,7 @@ class UserProfileView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserSettingsView(APIView):
@@ -58,4 +60,4 @@ class UserSettingsView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -10,7 +10,8 @@ class Board(models.Model):
     cover_image = models.URLField(blank=True, null=True)
     tags = models.CharField(max_length=255, blank=True, null=True)
     created_by = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='boards')
+        User, on_delete=models.CASCADE, related_name='boards'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

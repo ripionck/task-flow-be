@@ -17,7 +17,15 @@ Including another URLconf
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
 
 urlpatterns = [
-    path('api/auth/', include('users.urls')),
+    path('admin/', admin.site.urls),
+    path('api/users/', include('apps.users.urls')),
+    path('api/boards/', include('apps.boards.urls')),
+    path('api/columns/', include('apps.columns.urls')),
+    path('api/tasks/', include('apps.tasks.urls')),
+    path('api/comments/', include('apps.comments.urls')),
+    path('api/team_members/', include('apps.team_members.urls')),
+    path('api/notifications/', include('apps.notifications.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

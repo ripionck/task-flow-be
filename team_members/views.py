@@ -7,6 +7,23 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
+class TeamMemberListView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        team_members = TeamMember.objects.all()  # Or filter by board if needed
+        serializer = TeamMemberSerializer(team_members, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = TeamMemberSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()  # No direct creator to set
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class TeamMemberDetailView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]

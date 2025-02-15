@@ -45,7 +45,8 @@ class User(AbstractUser):
     full_name = models.CharField(
         _('full name'), max_length=255, blank=True, null=True)
     role = models.CharField(max_length=20, choices=ROLES, default='member')
-    avatar = models.URLField(blank=True, null=True)
+    avatar = models.ImageField(
+        upload_to='users/avatars/', blank=True, null=True)
     emailNotifications = models.BooleanField(default=True)
     desktopNotifications = models.BooleanField(default=True)
     themeMode = models.CharField(max_length=20, default='system')

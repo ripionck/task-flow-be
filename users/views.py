@@ -3,19 +3,25 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserRegistrationSerializer, CustomTokenObtainPairSerializer, UserProfileSerializer, UserSettingsSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from .models import User, UserSettings
 
 
-class UserRegistrationViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class UserRegistrationViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
     serializer_class = UserRegistrationSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        # Create the user
         user = serializer.save()
-        return Response({
-            'message': 'User created successfully',
-            'user': serializer.data
-        }, status=status.HTTP_201_CREATED)
+
+        # Create UserSettings for the new user
+        UserSettings.objects.create(user=user)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -32,9 +38,11 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,
         return self.request.user
 
 
-class UserSettingsViewSet(mixins.RetrieveModelMixin,
-                          mixins.UpdateModelMixin,
-                          viewsets.GenericViewSet):
+class UserSettingsViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet
+):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSettingsSerializer
 

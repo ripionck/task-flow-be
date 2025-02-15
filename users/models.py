@@ -1,6 +1,9 @@
+import uuid
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class User(AbstractUser):
@@ -24,6 +27,15 @@ class User(AbstractUser):
         return self.email
 
 
+@receiver(post_save, sender=User)
+def create_user_settings(sender, instance, created, **kwargs):
+    """
+    Automatically create UserSettings when a new User is created.
+    """
+    if created:
+        UserSettings.objects.create(user=instance)
+
+
 class UserSettings(models.Model):
     THEME_MODES = [
         ('light', 'Light'),
@@ -31,6 +43,7 @@ class UserSettings(models.Model):
         ('system', 'System')
     ]
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='settings')
     email_notifications = models.BooleanField(default=True)
@@ -38,3 +51,6 @@ class UserSettings(models.Model):
     theme_mode = models.CharField(
         max_length=20, choices=THEME_MODES, default='system')
     accent_color = models.CharField(max_length=7, default='#2563eb')
+
+    def __str__(self):
+        return f"Settings for {self.user.email}"

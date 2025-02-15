@@ -6,8 +6,8 @@ router = DefaultRouter()
 router.register(r'tasks', TaskViewSet, basename='task')
 
 urlpatterns = [
-    path('boards/<uuid:board_pk>/', include(router.urls)),
-    path('tasks/<uuid:task_pk>/comments/',
+    path('api/boards/<uuid:board_pk>/', include(router.urls)),
+    path('api/tasks/<uuid:task_pk>/comments/',
          CommentViewSet.as_view({'get': 'list', 'post': 'create'}),
          name='task-comments'),
 ]

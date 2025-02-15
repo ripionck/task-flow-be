@@ -47,10 +47,10 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLES, default='member')
     avatar = models.ImageField(
         upload_to='users/avatars/', blank=True, null=True)
-    emailNotifications = models.BooleanField(default=True)
-    desktopNotifications = models.BooleanField(default=True)
-    themeMode = models.CharField(max_length=20, default='system')
-    accentColor = models.CharField(max_length=7, blank=True, null=True)
+    email_notifications = models.BooleanField(default=True)
+    desktop_notifications = models.BooleanField(default=True)
+    theme_mode = models.CharField(max_length=20, default='system')
+    accent_color = models.CharField(max_length=7, blank=True, null=True)
 
     username = None
     USERNAME_FIELD = 'email'

@@ -13,7 +13,8 @@ class User(AbstractUser):
     email = models.EmailField(_("email address"), unique=True)
     user_type = models.CharField(
         max_length=20, choices=USER_TYPE_CHOICES, default='user')
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    avatar = models.ImageField(
+        upload_to='users/avatars/', blank=True, null=True)
     full_name = models.CharField(max_length=255, blank=True)
 
     USERNAME_FIELD = 'email'

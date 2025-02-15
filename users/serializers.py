@@ -1,11 +1,17 @@
 from rest_framework import serializers
 from .models import User, UserSettings
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import User
+from rest_framework.validators import UniqueValidator
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    username = serializers.CharField(
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
 
     class Meta:
         model = User
@@ -36,22 +42,26 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user and user.check_password(credentials['password']):
             refresh = self.get_token(user)
             data = {
+                'message': 'User login successfully',
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-                'user': {
-                    'email': user.email,
-                    'username': user.username,
-                    'user_type': user.user_type
-                }
             }
             return data
         raise serializers.ValidationError('Invalid credentials')
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField(required=False)
+
     class Meta:
         model = User
         fields = ('email', 'username', 'full_name', 'avatar', 'user_type')
+
+    def validate_avatar(self, value):
+        if value.size > 2 * 1024 * 1024:
+            raise serializers.ValidationError(
+                "File size must be less than 2MB.")
+        return value
 
 
 class UserSettingsSerializer(serializers.ModelSerializer):

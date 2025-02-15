@@ -1,14 +1,19 @@
-from django.urls import path
-from .views import (
-    UserRegistrationView,
-    CustomTokenObtainPairView,
-    UserProfileView,
-    UserSettingsView
-)
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import UserRegistrationViewSet, CustomTokenObtainPairView, UserProfileViewSet, UserSettingsViewSet
+
+router = DefaultRouter()
+router.register(r'register', UserRegistrationViewSet, basename='register')
+router.register(r'settings', UserSettingsViewSet, basename='settings')
+
+user_profile_viewset = UserProfileViewSet.as_view({
+    'get': 'retrieve',
+    'patch': 'partial_update',
+})
 
 urlpatterns = [
-    path('register/', UserRegistrationView.as_view(), name='user-register'),
-    path('login/', CustomTokenObtainPairView.as_view(), name='token-obtain'),
-    path('profile/', UserProfileView.as_view(), name='user-profile'),
-    path('settings/', UserSettingsView.as_view(), name='user-settings'),
+    path('api/auth/', include(router.urls)),
+    path('api/auth/token/', CustomTokenObtainPairView.as_view(),
+         name='token_obtain_pair'),
+    path('api/auth/profile/', user_profile_viewset, name='profile'),
 ]

@@ -21,11 +21,11 @@ from django.contrib import admin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/users/', include('apps.users.urls')),
-    path('api/boards/', include('apps.boards.urls')),
-    path('api/columns/', include('apps.columns.urls')),
-    path('api/tasks/', include('apps.tasks.urls')),
-    path('api/comments/', include('apps.comments.urls')),
-    path('api/team_members/', include('apps.team_members.urls')),
-    path('api/notifications/', include('apps.notifications.urls')),
+    path('api/users/', include('users.urls')),
+    path('api/boards/', include('boards.urls')),
+    path('api/columns/', include('columns.urls')),
+    path('api/tasks/', include('tasks.urls')),
+    path('api/comments/', include('comments.urls')),
+    path('api/team_members/', include('team_members.urls')),
+    path('api/notifications/', include('notifications.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'users',
     'boards',
     'tasks',
+    'columns',
+    'comments',
+    'team_members',
     'notifications',
 ]
 
@@ -84,7 +87,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION = 'taskflow.wsgi.application'
 
 
 # Database

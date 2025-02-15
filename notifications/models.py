@@ -16,7 +16,9 @@ class Notification(models.Model):
         User, on_delete=models.CASCADE, related_name='notifications')
     type = models.CharField(max_length=20, choices=TYPES)
     content = models.TextField()
-    related_item_id = models.CharField(
-        max_length=255)  # Store UUIDs as strings
+    related_item_id = models.CharField(max_length=255, blank=True, null=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.type

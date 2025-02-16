@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
     """
     avatar = serializers.ImageField(allow_null=True, required=False)
     # Use the User instance as the source
-    settings = SettingsSerializer(source='*')
+    settings = SettingsSerializer(source='*', required=False)
 
     class Meta:
         model = User
